@@ -2,8 +2,8 @@ require.config({
     baseUrl: '',
     paths: {
         'domReady': 'lib/domReady', //domReady is a RequireJS plugin
-        'jasmine': 'lib/jasmine-1.1.0/jasmine',
-        'jasmine-html': 'lib/jasmine-1.1.0/jasmine-html',
+        'jasmine': 'lib/jasmine-1.3.1/jasmine',
+        'jasmine-html': 'lib/jasmine-1.3.1/jasmine-html',
 
         'specRunner': 'spec/specRunner',
 

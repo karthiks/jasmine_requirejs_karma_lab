@@ -4,7 +4,7 @@ This is basically the **Jasmine Standalone Release** ported to use RequireJS.
 
 It includes:
 
-* [Jasmine 1.1.0](https://github.com/pivotal/jasmine/downloads);
+* [Jasmine 1.3.1](https://github.com/pivotal/jasmine/downloads);
 * [RequireJS 2.1.9](http://requirejs.org/docs/download.html);
 * [RequireJS PageLoad Plugin](http://requirejs.org/docs/api.html#pageload)
 
@@ -36,8 +36,8 @@ require.config({
     baseUrl: '',
     paths: {
         'domReady': 'lib/domReady', //domReady is a RequireJS plugin
-        'jasmine': 'lib/jasmine-1.1.0/jasmine',
-        'jasmine-html': 'lib/jasmine-1.1.0/jasmine-html',
+        'jasmine': 'lib/jasmine-1.3.1/jasmine',
+        'jasmine-html': 'lib/jasmine-1.3.1/jasmine-html',
 
         'hello': 'src/hello',
         // add new Subject Under Test here..
@@ -108,8 +108,8 @@ The above changes leaves only the RequireJS code back on the SpecRunner.html fil
 <html>
 <head>
   <title>Jasmine Spec Runner</title>
-  <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.1.0/jasmine_favicon.png">
-  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.1.0/jasmine.css">
+  <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.3.1/jasmine_favicon.png">
+  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.3.1/jasmine.css">
 
   <script type="text/javascript" data-main="spec/test-main" src="lib/require.js"></script>
 </head>
@@ -123,8 +123,7 @@ The above changes leaves only the RequireJS code back on the SpecRunner.html fil
 
 [Karthik Sirasanagandla](https://github.com/karthiks)
 
-## My hearty thanks goes to the ones I'm inspired by.
+## My hearty thanks goes to the folks I'm inspired by:
 
-Made with great inspiration from
-* [Jasmine Standalone RequireJS](https://github.com/pirelenito/jasmine-standalone-requirejs) by [Paulo Ragonha](https://github.com/pirelenito)
-* [Testing Backbone + RequireJS Applications with Jasmine](http://kilon.org/blog/2012/08/testing-backbone-requirejs-applications-with-jasmine/) by [Uzi Kilon](https://github.com/uzikilon).
+* [Paulo Ragonha](https://github.com/pirelenito)
+* [Uzi Kilon](https://github.com/uzikilon)
