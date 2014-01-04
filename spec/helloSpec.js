@@ -1,4 +1,4 @@
-define(['src/hello'], function(Hello) {
+define(['hello'], function(Hello) {
     describe("helloWorld", function() {
         it("should return hello world", function() {
             expect(Hello.helloWorld()).toEqual('Hello World');

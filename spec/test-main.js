@@ -18,6 +18,7 @@ for (var file in window.__karma__.files) {
 require.config({
     baseUrl: '/base',
     paths: {
+        'hello': 'src/hello'
     },
 
     //You'd shim the 3rd party libs that are not AMD compatible
