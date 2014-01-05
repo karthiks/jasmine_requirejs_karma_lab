@@ -1,5 +1,4 @@
 // Karma configuration
-// Generated on Sat Jan 04 2014 21:54:48 GMT+0530 (IST)
 
 module.exports = function(config) {
   config.set({
@@ -56,6 +55,7 @@ module.exports = function(config) {
     // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
     // - PhantomJS
     // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
+    // Choose [] if you like to manually hit the URL (http://localhost:9876/) in a browser of your choice
     browsers: [],
 
 

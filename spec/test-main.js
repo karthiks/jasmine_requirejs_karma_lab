@@ -16,13 +16,14 @@ for (var file in window.__karma__.files) {
 }
 
 require.config({
+    // Note: It is important to note that Karma uses /base as part of the base URL
     baseUrl: '/base',
+
+    // Important: you can conveniently ignore '/base' when you compute the paths for the libs/modules as below
     paths: {
         'hello': 'src/hello'
-    },
-
-    //You'd shim the 3rd party libs that are not AMD compatible
-    shim: {
+        // All source files go here for simpler naming so that it is easier to use these names later
+        // instead of using the absolute/relative path where ever these modules are required
     },
 
     // An array of dependencies to load as soon as RequireJS loader has processed the configuration.

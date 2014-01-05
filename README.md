@@ -1,12 +1,28 @@
-# Jasmine Standalone RequireJS
+# Jasmine, RequireJS, and Karma (a.k.a Testacular)
 
-This is basically the **Jasmine Standalone Release** ported to use RequireJS.
+This project is an attempt to show the changes to be incorporated on a Javascript project with Jasmine (Standalone) and RequireJS libraries,
+in order to use Karma for developer productivity in testing.
 
-It includes:
+The Javascript project using Jasmine (standalone) and RequireJS libs are used as base project.
 
-* [Jasmine 1.3.1](https://github.com/pivotal/jasmine/downloads);
+Base project included:
+* [Jasmine 1.1.0](https://github.com/pivotal/jasmine/downloads);
 * [RequireJS 2.1.9](http://requirejs.org/docs/download.html);
 * [RequireJS PageLoad Plugin](http://requirejs.org/docs/api.html#pageload)
+
+We install Karma on top of it:
+* [Karma 0.10.8](http://karma-runner.github.io)
+
+## Karma Prerequisite
+
+[NodeJS](http://nodejs.org)
+
+## Installing Karma
+
+Installing is simple. Just run the command below:
+```bash
+$ npm install -g karma
+```
 
 ## Writing a new spec
 
@@ -16,11 +32,10 @@ Example:
 
 ```javascript
 define([
-  'jasmine'
   //corresponding SUT that is a dependency
   // and other dependencies, if any
 ],
-function (jasmine, sut, [other_dependencies_if_any]) {
+function (sut, [other_dependencies_if_any]) {
   // spec code
 });
 
@@ -28,95 +43,118 @@ function (jasmine, sut, [other_dependencies_if_any]) {
 
 ## The RequireConfig
 
-Finally, we setup RequireJS to use [shim](http://requirejs.org/docs/api.html#config-shim) to load Jasmine because as yet Jasmine is not AMD compatible.
-And our config file for this purpose is spec/test-main.js
-
+The earlier RequireJs config named "test-main.js" is well, simplified to
 ```javascript
+
+/*
+* Require Each Test File
+*
+* Karma includes all the files in window.__karma__.files, so by filtering this array we find all our test files.
+*
+* Now we can tell Require.js to load our tests,
+* which must be done asynchronously as dependencies must be fetched before the tests are run.
+*/
+var tests = [];
+for (var file in window.__karma__.files) {
+    if (window.__karma__.files.hasOwnProperty(file)) {
+        if (/Spec\.js$/.test(file)) {
+            tests.push(file);
+        }
+    }
+}
+
 require.config({
-    baseUrl: '',
+    // Note: It is important to note that Karma uses /base as part of the base URL
+    baseUrl: '/base',
+
+    // Important: you can conveniently ignore '/base' when you compute the paths for the libs/modules as below
     paths: {
-        'domReady': 'lib/domReady', //domReady is a RequireJS plugin
-        'jasmine': 'lib/jasmine-1.3.1/jasmine',
-        'jasmine-html': 'lib/jasmine-1.3.1/jasmine-html',
-
-        'hello': 'src/hello',
-        // add new Subject Under Test here..
-
-        'helloSpec': 'spec/helloSpec'
-        // add new specs here
+        'hello': 'src/hello'
+        // All source files go here for simpler naming so that it is easier to use these names later
+        // instead of using the absolute/relative path where ever these modules are required
     },
 
     // An array of dependencies to load as soon as RequireJS loader has processed the configuration.
-    deps: ['specRunner'],
+    // ask Require.js to load these files (all our tests)
+    deps: tests,
 
-    //You'd shim the 3rd party libs that are not AMD compatible
-    shim: {
-        'jasmine': {
-            exports: 'jasmine'
-        },
-        'jasmine-html': ['jasmine']
-    },
+    // start test run, once Require.js is done
+    callback: window.__karma__.start,
 
     waitSeconds: 15
 });
 ```
 
-## The SpecRunner
+## Karma config
 
-And to run the specs, we move the logic to exec the Jasmine runner from the HTML page scriptlet,
-to an anonymous function definition, either as part of the test-main.js or
-to a separate module like specRunner.js and mark it as dependency in the require.config above.
-
-The re-defined logic to execute the Jasmine the RequireJS way is below for quick perusal:
+The Karma config is the key to most of the magic of simplifying things in the other places.
+And the Karma config file - karma.conf.js, file looks as below:
 
 ```javascript
-require([
-    'domReady',
-    'jasmine',
-    'jasmine-html',
-    'helloSpec'
-    // add new specs here
-],
-function(domReady, jasmine) {
-//    console.log("All is well..");
-//    console.log(jasmine);
-// Moved the script from Jasmine's SpecRunner.html scriptlet to this block..
-// Note that the window.onload functionality is replaced with domReady plugin available for RequireJS
-    var jasmineEnv = jasmine.getEnv();
-    jasmineEnv.updateInterval = 1000;
+// Karma configuration
 
-    var trivialReporter = new jasmine.TrivialReporter();
+module.exports = function(config) {
+  config.set({
 
-    jasmineEnv.addReporter(trivialReporter);
+    // base path, that will be used to resolve files and exclude
+    basePath: '',
 
-    jasmineEnv.specFilter = function(spec) {
-        return trivialReporter.specFilter(spec);
-    };
+    // frameworks to use
+    // This eleminates the need to store the libs locally in the project lib file.
+    // Karma makes use of the installation of these respective modules via node plugins.
+    // You got to resort to the traditional approach of declaring these in the require config otherwise :P
+    frameworks: ['jasmine', 'requirejs'],
+
+    // list of files / patterns to load in the browser
+    // karma loads all these files automatically when starting its server under its /base directory automatically,
+    // like 'src/abc.js' becomes 'karma/src/abc.js'
+    files: [
+      {pattern: 'src/**/*.js', included: false},
+      {pattern: 'spec/**/*Spec.js', included: false},
+
+      'spec/test-main.js'
+    ],
+
+    // test results reporter to use
+    // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
+    reporters: ['progress'],
+
+    // web server port
+    port: 9876,
+
+    // enable / disable colors in the output (reporters and logs)
+    colors: true,
+
+    // level of logging
+    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+    logLevel: config.LOG_INFO,
 
 
-    domReady(function () {
-        jasmineEnv.execute();
-    });
-});
-```
+    // enable / disable watching file and executing tests whenever any file changes
+    autoWatch: true,
 
-The above changes leaves only the RequireJS code back on the SpecRunner.html file, making the HTML file look simpler :)
 
-```html
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-  "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <title>Jasmine Spec Runner</title>
-  <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.3.1/jasmine_favicon.png">
-  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.3.1/jasmine.css">
+    // Start these browsers, currently available:
+    // Chrome || ChromeCanary || Firefox || Opera || Safari || PhantomJS || IE
+    // Opera (has to be installed with `npm install karma-opera-launcher`)
+    // Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
+    // IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
+    // Choose [] if you like to manually hit the URL (http://localhost:9876/) in a browser of your choice
+    browsers: [],
 
-  <script type="text/javascript" data-main="spec/test-main" src="lib/require.js"></script>
-</head>
+    // If browser does not capture in given timeout [ms], kill it
+    captureTimeout: 60000,
 
-<body>
-</body>
-</html>
+    // Continuous Integration mode
+    // if true, it capture browsers, run tests and exit
+    singleRun: false,
+
+    // report which specs are slower than 500ms
+    // CLI --report-slower-than 500
+    reportSlowerThan: 500
+  });
+};
+
 ```
 
 ## Put together by
